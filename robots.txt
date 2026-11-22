@@ -1,0 +1,4 @@
+# Copie de test a site-ului Amazing Skin (site-ul real e https://amazingskin.ro).
+# Nu se indexează.
+User-agent: *
+Disallow: /
