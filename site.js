@@ -785,4 +785,9 @@
     /* venit de pe altă pagină cu /#programare: fereastra se deschide direct */
     if(location.hash==="#programare")setTimeout(function(){open(null)},400);
   })();
+  /* videoclipurile cu cliente: când pornește unul, celelalte se opresc */
+  document.addEventListener("play",function(e){
+    var v=e.target;if(!v||v.tagName!=="VIDEO"||!v.closest(".rev-videos"))return;
+    document.querySelectorAll(".rev-videos video").forEach(function(o){if(o!==v&&!o.paused)o.pause()});
+  },true);
 })();
