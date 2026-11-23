@@ -501,9 +501,10 @@
   }
 
   /* înainte / după: linia urmărește mouse-ul; pe telefon se trage cu degetul; din tastatură cu săgețile */
-  var ba=document.getElementById("ba");
-  if(ba){
+  /* (merge pentru fiecare slider .ba de pe pagină: NOON pe prima pagină, zonele pe paginile lor) */
+  Array.prototype.forEach.call(document.querySelectorAll(".ba"),function(ba){
     var baRange=ba.querySelector(".ba-range"),baDrag=false,baTouched=false;
+    if(!baRange)return;
     function baSet(p){p=Math.max(0,Math.min(100,p));ba.style.setProperty("--p",p+"%");baRange.value=Math.round(p)}
     function baX(x){var r=ba.getBoundingClientRect();baSet((x-r.left)/r.width*100)}
     ba.addEventListener("pointermove",function(e){if(e.pointerType==="mouse"||baDrag){baTouched=true;baX(e.clientX)}});
@@ -521,7 +522,7 @@
       },{threshold:.6});
       baIo.observe(ba);
     }
-  }
+  });
 
   var locMq=matchMedia("(max-width:560px)"),locs=document.querySelectorAll("details.loc");
   function syncLocs(){Array.prototype.forEach.call(locs,function(d,i){d.open=!locMq.matches||i===0})}

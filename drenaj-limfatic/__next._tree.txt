@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/2a0mwix_2i68e.css","style"]
+:HL["/_next/static/chunks/3seo8vck65hni.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"drenaj-limfatic","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"5V8Xw4LepzEvej92O56z3","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"khrrbdTorORU0MOH74PWG","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
