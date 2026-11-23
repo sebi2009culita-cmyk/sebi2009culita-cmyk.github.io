@@ -2,4 +2,4 @@
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":"/_not-found","h":64,"c":"$Q2"}]]
-0:{"b":"iyxo4WKWLVo3w-aahruSJ","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
+0:{"b":"GqpCHtddiU32L9mDmP5qy","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
