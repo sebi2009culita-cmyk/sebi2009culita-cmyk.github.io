@@ -593,17 +593,18 @@
       b.addEventListener("animationend",end);
       if(onGone)addEventListener("scroll",watch,{passive:true});
     }
-    /* lumina de după demo stă pe butonul de programare pe care îl vezi: cel din hero cât timp hero-ul e pe ecran,
-       apoi cel din antet când derulezi (pe telefon, unde antetul nu are buton, cel din bara de jos) */
+    /* lumina de după demo: pe butonul din hero doar cât timp pagina e sus de tot; cum derulezi (chiar și puțin),
+       trece pe butonul din antet (pe telefon, unde antetul nu are buton, pe cel din bara de jos) și revine pe hero când urci până sus */
     var glowOn=null,glowRaf=0;
     function shown(el){return !!el&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=="hidden"}
     function glowTarget(){
       var r=hero&&hero.getBoundingClientRect(),hb=header?header.getBoundingClientRect().bottom:0;
-      if(r&&r.height&&r.bottom>hb&&r.top<innerHeight)return hero;
+      var heroOn=!!(r&&r.height&&r.bottom>hb&&r.top<innerHeight);
+      if(heroOn&&scrollY<=8)return hero;
       if(shown(topBtn))return topBtn;
       var bar=barBtn&&barBtn.closest(".cta-bar");
       if(shown(barBtn)&&!(bar&&bar.classList.contains("is-hidden")))return barBtn;
-      return null;
+      return heroOn?hero:null;
     }
     function placeGlow(){
       glowRaf=0;var t=glowTarget();if(t===glowOn)return;
