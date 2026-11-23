@@ -584,9 +584,10 @@
       return !!hit&&(hit===el||el.contains(hit));
     }
     function press(b,onGone){
-      b.classList.remove("demo-press");void b.offsetWidth;b.classList.add("demo-press");
+      b.classList.remove("demo-press","glow-loop");void b.offsetWidth;b.classList.add("demo-press");
       function stop(){b.classList.remove("demo-press");b.removeEventListener("animationend",end);removeEventListener("scroll",watch)}
-      function end(e){if(e.target===b&&!e.pseudoElement&&e.animationName.indexOf("demo")===0)stop()}
+      /* demo-ul s-a terminat pe ecran: butonul primește lumina care se rotește pe contur */
+      function end(e){if(e.target===b&&!e.pseudoElement&&e.animationName.indexOf("demo")===0){stop();b.classList.add("glow-loop")}}
       /* dacă butonul iese de pe ecran în timpul demo-ului (s-a derulat), îl oprim aici și îl mutăm */
       function watch(){if(onGone&&!visible(b)){stop();onGone()}}
       b.addEventListener("animationend",end);
