@@ -587,11 +587,34 @@
       b.classList.remove("demo-press","glow-loop");void b.offsetWidth;b.classList.add("demo-press");
       function stop(){b.classList.remove("demo-press");b.removeEventListener("animationend",end);removeEventListener("scroll",watch)}
       /* demo-ul s-a terminat pe ecran: butonul primește lumina care se rotește pe contur */
-      function end(e){if(e.target===b&&!e.pseudoElement&&e.animationName.indexOf("demo")===0){stop();b.classList.add("glow-loop")}}
+      function end(e){if(e.target===b&&!e.pseudoElement&&e.animationName.indexOf("demo")===0){stop();startGlow()}}
       /* dacă butonul iese de pe ecran în timpul demo-ului (s-a derulat), îl oprim aici și îl mutăm */
       function watch(){if(onGone&&!visible(b)){stop();onGone()}}
       b.addEventListener("animationend",end);
       if(onGone)addEventListener("scroll",watch,{passive:true});
+    }
+    /* lumina de după demo stă pe butonul de programare pe care îl vezi: cel din hero cât timp hero-ul e pe ecran,
+       apoi cel din antet când derulezi (pe telefon, unde antetul nu are buton, cel din bara de jos) */
+    var glowOn=null,glowRaf=0;
+    function shown(el){return !!el&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=="hidden"}
+    function glowTarget(){
+      var r=hero&&hero.getBoundingClientRect(),hb=header?header.getBoundingClientRect().bottom:0;
+      if(r&&r.height&&r.bottom>hb&&r.top<innerHeight)return hero;
+      if(shown(topBtn))return topBtn;
+      var bar=barBtn&&barBtn.closest(".cta-bar");
+      if(shown(barBtn)&&!(bar&&bar.classList.contains("is-hidden")))return barBtn;
+      return null;
+    }
+    function placeGlow(){
+      glowRaf=0;var t=glowTarget();if(t===glowOn)return;
+      if(glowOn)glowOn.classList.remove("glow-loop");
+      glowOn=t;if(t&&!t.classList.contains("demo-press"))t.classList.add("glow-loop");
+    }
+    function queueGlow(){if(!glowRaf)glowRaf=requestAnimationFrame(placeGlow)}
+    var glowStarted=false;
+    function startGlow(){
+      if(!glowStarted){glowStarted=true;addEventListener("scroll",queueGlow,{passive:true});addEventListener("resize",queueGlow)}
+      glowOn=null;placeGlow();
     }
     var tries=0;
     function play(){
