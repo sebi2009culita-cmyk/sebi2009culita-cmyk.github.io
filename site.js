@@ -210,7 +210,7 @@
 
   var groups=[
     {name:"Față",zones:[["mustata","Mustață, bărbie, perciuni",85],["fata","Față total",200]]},
-    {name:"Corp superior",zones:[["axile","Axile",145],["brate","Brațe",250],["brate-jum","Brațe 1/2",200],["umeri","Umeri, ceafă",150],["pectorali","Pectorali, abdomen",250],["spate","Spate total",385],["lombari","Lombari",150]]},
+    {name:"Corp superior",zones:[["axile","Axile",145],["brate","Brațe",250],["umeri","Umeri, ceafă",150],["pectorali","Pectorali, abdomen",250],["spate","Spate total",385],["lombari","Lombari",150]]},
     {name:"Corp inferior",zones:[["bikini","Linia bikini",125],["inghinal","Inghinal total",285],["fese","Fese",150],["picioare-scurt","Picioare (scurt)",285],["picioare-lung","Picioare (lung)",485]]}
   ];
   var byId={},fmt=function(n){return n.toLocaleString("ro-RO")};
@@ -228,6 +228,20 @@
     });
     fs.appendChild(c);host.appendChild(fs);
   });
+  /* prețuri pe clinici: vin din pagină (lib/prices.ts), aceleași ca pe pagina Prețuri */
+  var ZP=null;try{ZP=JSON.parse(document.getElementById("zone-prices").textContent)}catch(e){}
+  var calcCity="București";
+  function avail(id){return !ZP||(byId[id]&&byId[id].price>0)}
+  function applyCity(c){
+    if(!ZP||!ZP.prices[c]||!host)return;calcCity=c;
+    Object.keys(byId).forEach(function(id){
+      var p=ZP.prices[c][id]||0,inp=document.getElementById("z-"+id);byId[id].price=p;
+      if(!inp)return;var lab=inp.nextElementSibling,sp=lab.querySelector(".num");
+      if(sp)sp.textContent=p?fmt(p)+" lei":"nu e în listă";
+      if(p){inp.disabled=false;lab.removeAttribute("title")}
+      else{inp.checked=false;inp.disabled=true;lab.title="Zona nu e în lista clinicii din "+c}
+    });
+  }
   function selected(){return Array.prototype.map.call(host.querySelectorAll("input:checked"),function(i){return i.value})}
   function render(){
     var ids=selected(),sum=0,list=document.getElementById("picked");
@@ -237,14 +251,15 @@
     var tot=document.getElementById("total"),nt=fmt(sum);if(tot.textContent!==nt){tot.textContent=nt;tot.classList.remove("tick");void tot.offsetWidth;tot.classList.add("tick")}
     document.getElementById("six").textContent=fmt(sum*6)+" lei";
     var has=function(k){return ids.indexOf(k)>-1},deals=[],box=document.getElementById("deal");
-    if(has("axile")&&has("inghinal"))deals.push(["Axile și inghinal total au ofertă","325 lei pe ședință în loc de 430 lei, sau pachetul de 6 ședințe la 1.299 lei în loc de 2.580 lei."]);
-    if(has("picioare-lung"))deals.push(["Picior lung are pachet de 6 ședințe","1.499 lei cu plată în avans, în loc de 2.910 lei."]);
+    var dl=(ZP&&ZP.deals[calcCity])||{};
+    if(has("axile")&&has("inghinal"))deals.push(["Axile și inghinal total au ofertă în "+calcCity,dl.axileInghinal||"Întreabă la programare."]);
+    if(has("picioare-lung"))deals.push(["Picior lung are pachet de 6 ședințe în "+calcCity,dl.piciorLung6||"Întreabă la programare."]);
     box.innerHTML="";
     deals.forEach(function(d){var p=document.createElement("p"),s=document.createElement("strong");s.textContent=d[0];p.appendChild(s);p.appendChild(document.createTextNode(d[1]));box.appendChild(p)});
     box.hidden=!deals.length;
   }
   /* zona mare include zona mică: o bifezi pe cea mare, cea mică se debifează și se blochează */
-  var covers={"brate":["brate-jum"],"fata":["mustata"],"inghinal":["bikini"],"picioare-lung":["picioare-scurt"],"spate":["lombari","fese"]};
+  var covers={"fata":["mustata"],"inghinal":["bikini"],"picioare-lung":["picioare-scurt"],"spate":["lombari","fese"]};
   function applyCovers(){
     var blocked={};
     Object.keys(covers).forEach(function(big){
@@ -256,7 +271,7 @@
         if(blocked[s]){
           inp.checked=false;inp.disabled=true;
           lab.title="Inclus în "+byId[blocked[s]].label;
-        }else{
+        }else if(avail(s)){
           inp.disabled=false;lab.removeAttribute("title");
         }
       });
@@ -264,7 +279,11 @@
   }
   var msg=document.getElementById("f-msg");
   if(host){
-    host.addEventListener("change",function(){applyCovers();render()});applyCovers();render();
+    host.addEventListener("change",function(){applyCovers();render()});
+    var cityBox=document.querySelector(".calc-city"),pick=cityBox&&cityBox.querySelector("input:checked");
+    if(pick)applyCity(pick.value);
+    if(cityBox)cityBox.addEventListener("change",function(e){if(e.target.name!=="calc-city")return;applyCity(e.target.value);applyCovers();render();setCity(e.target.value)});
+    applyCovers();render();
     document.getElementById("calc-cta").addEventListener("click",function(){
       var ids=selected();if(ids.length)msg.value=ids.map(function(i){return byId[i].label}).join(", ");
     });
@@ -304,23 +323,8 @@
       ["Osip Irina","Foarte multumita de servicii, domnișoara Alexandra este foarte atenta la detalii, profi! Recomand."],
       ["Oana Mucuta","Recomand, servicii de calitate si foarte profesional, personal pregatit si amabil."]]},
     /* Bacău și Iași: nota și numărul de recenzii de pe Google Maps, 17 noiembrie 2026; recenziile, așa cum apar acolo */
-    {city:"Bacău",score:4.7,count:60,revs:[
-      ["Marina Dogaru","Experienta mea la Amazing Skin Bacau este întotdeauna una foarte placuta! Imi place mult atentia acordata, atmosfera relaxanta si felul in care sunt primita. Tratamentele faciale si procedurile de remodelare corporala sunt realizate cu grija, profesionalism si multa implicare. […] Recomand!"],
-      ["simona-ramona Huides","O experiență de nota 10 pentru procedurile de remodelare corporală și cele de epilare definitivă. Ce apreciez cel mai mult este faptul că fetele nu doar că aplică tratamentul, ci îți explică exact cum funcționează aparatura și ce protocol se potrivește cel mai bine corpului tău. […] Recomand Amazing Skin pentru profesionalism și starea de bine pe care ți-o oferă."],
-      ["Gabriela Cartes","Am avut o experiență extraordinară la acest salon! Atmosfera este foarte plăcută, totul este curat, modern și primitor. Un mare plus este echipa, iar aici trebuie să o menționez pe Anca, o profesionistă desăvârșită, mereu atentă la detalii, comunicativă și extrem de bine pregătită. […] Recomand!"],
-      ["Bianca Munteanu","Recomand cu drag Amazing Skin! Am apelat la serviciile lor de epilare definitivă și tratamente faciale și sunt foarte mulțumită de rezultate. The best in town so far."],
-      ["Mihaela M","Personal profesionist, atmosfera relaxantă, echipamente de ultimă generație și rezultate vizibile în urma procedurilor efectuate. Ce poți să-ți dorești mai mult? Recomand cu toată încrederea!"],
-      ["Ramona D","Servicii impecabile, personal amabil, bine pregătit și mereu atent la detalii! Atmosferă relaxantă, și rezultate care întrec așteptările. Recomand cu încredere!"],
-      ["Oana Cojan","Servicii de calitate, profesionalism, aparatură de ultima generație si personal calificat. Super mulțumită de toate procedurile efectuate in acest salon."],
-      ["Tiana Ignea","Personal instruit, atmosfera calda si relaxanta, aparatura premiu. Va mulțumesc ca existați, Amazing Skin. Mi-ati făcut viata mai frumoasa!"],
-      ["Andreea Sova","Sunt clienta acestui loc magic de foarte mulți ani si DA, il recomand! Aparatura de ultima generație, servicii de înaltă calitate si rezultate WoW imediate! Personalul este foarte bine organizat, amabil, primitor si cu zâmbetul pe buze mereu! Un aspect de remarcat este curățenia, care este la superlativ! Amazing Skin este locul unde dupa fiecare vizita te simți mai frumoasa!"]]},
-    {city:"Iași",score:5,count:9,revs:[
-      ["Mihaela Ciubotariu","Foarte mulțumită de serviciile celor de la AmazingSkin! Am fost și la epilare definitivă-rezultate foarte bune, terapeut bine pregătit, atent la nevoile mele, calmă, și am fost și pe remodelare corporală-criolipoliza și AlmaPrime, si chiar am văzut rezultate în zona abdomenului! Recomand cu mare drag!"],
-      ["dumitriu simona elena","Sunt foarte încântată de experienta de la AmazingSkin Iași! Am făcut remodelare corporala iar rezultatul e fost vizibil foarte repede, recomand cu tot dragul."],
-      ["Maria Macovei","Recomand! Totul a decurs bine, aparate de ultima generatie si rezultate foarte bune."],
-      ["silver winter","Am fost mulțumită, recomand."],
-      ["Diaconu Ciprian","Super, recomand!"],
-      ["greta greta","Recomand."]]}
+    
+    
   ];
   /* „9 recenzii”, „218 recenzii”, dar „165 de recenzii”: în română „de” vine doar când ultimele două cifre fac 20 sau mai mult (sau 00) */
   function revCount(n){var t=n%100;return n+((t===0&&n>0)||t>=20?" de recenzii":" recenzii")+" pe Google"}
