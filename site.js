@@ -212,10 +212,13 @@
     {name:"Față",zones:[["mustata","Mustață, bărbie, perciuni",85],["fata","Față total",200]]},
     {name:"Corp superior",zones:[["axile","Axile",145],["brate","Brațe",250],["umeri","Umeri, ceafă",150],["pectorali","Pectorali, abdomen",250],["spate","Spate total",385],["lombari","Lombari",150]]},
     {name:"Corp inferior",zones:[["bikini","Linia bikini",125],["inghinal","Inghinal total",285],["fese","Fese",150],["picioare-scurt","Picioare (scurt)",285],["picioare-lung","Picioare (lung)",485]]}
+,
+    {name:"Remodelare corporală (o ședință)",treat:1,zones:[["crio-1","Criolipoliză, 1 zonă",400],["crio-2","Criolipoliză, 2 zone",600],["drenaj","Drenaj limfatic",100],["ems","EMS Sculpt",0],["kokun","Kokun Shape 3, 1 zonă",0],["rf","Radiofrecvență, 1 zonă",150]]},
+    {name:"Tratamente faciale (o ședință)",treat:1,zones:[["oxy","Oxygenera Pro",399],["noon","Peeling NOON",400],["plasma","Plasmă rece (de la)",0],["micro","Microneedling",400],["acnee","Tratament pentru acnee",299],["pete","Pete pigmentare",399],["curatare","Curățare facială",299]]}
   ];
   var byId={},fmt=function(n){return n.toLocaleString("ro-RO")};
   var host=document.getElementById("zones");
-  groups.forEach(function(g){g.zones.forEach(function(z){byId[z[0]]={label:z[1],price:z[2]}})});
+  groups.forEach(function(g){g.zones.forEach(function(z){byId[z[0]]={label:z[1],price:z[2],treat:!!g.treat}})});
   /* pe site-ul generat, zonele cu prețuri sunt deja scrise în HTML de build.py (le văd Google și asistenții AI); aici le construim doar dacă lipsesc */
   if(host&&!host.children.length)groups.forEach(function(g){
     var fs=document.createElement("fieldset");
@@ -239,17 +242,18 @@
       if(!inp)return;var lab=inp.nextElementSibling,sp=lab.querySelector(".num");
       if(sp)sp.textContent=p?fmt(p)+" lei":"nu e în listă";
       if(p){inp.disabled=false;lab.removeAttribute("title")}
-      else{inp.checked=false;inp.disabled=true;lab.title="Zona nu e în lista clinicii din "+c}
+      else{inp.checked=false;inp.disabled=true;lab.title=(byId[id].treat?"Tratamentul nu se face în clinica din ":"Zona nu e în lista clinicii din ")+c}
     });
   }
   function selected(){return Array.prototype.map.call(host.querySelectorAll("input:checked"),function(i){return i.value})}
   function render(){
     var ids=selected(),sum=0,list=document.getElementById("picked");
     list.innerHTML="";
+    var ep=0;ids.forEach(function(id){if(!byId[id].treat)ep+=byId[id].price});
     ids.forEach(function(id){sum+=byId[id].price;var li=document.createElement("li");li.innerHTML="<span></span><span>"+byId[id].price+" lei</span>";li.firstChild.textContent=byId[id].label;list.appendChild(li)});
-    if(!ids.length){list.innerHTML='<li class="empty">Bifează cel puțin o zonă.</li>'}
+    if(!ids.length){list.innerHTML='<li class="empty">Bifează o zonă sau un tratament.</li>'}
     var tot=document.getElementById("total"),nt=fmt(sum);if(tot.textContent!==nt){tot.textContent=nt;tot.classList.remove("tick");void tot.offsetWidth;tot.classList.add("tick")}
-    document.getElementById("six").textContent=fmt(sum*6)+" lei";
+    document.getElementById("six").textContent=fmt(ep*6)+" lei";
     var has=function(k){return ids.indexOf(k)>-1},deals=[],box=document.getElementById("deal");
     var dl=(ZP&&ZP.deals[calcCity])||{};
     if(has("axile")&&has("inghinal"))deals.push(["Axile și inghinal total au ofertă în "+calcCity,dl.axileInghinal||"Întreabă la programare."]);
@@ -285,11 +289,11 @@
     if(cityBox)cityBox.addEventListener("change",function(e){if(e.target.name!=="calc-city")return;applyCity(e.target.value);applyCovers();render();setCity(e.target.value)});
     applyCovers();render();
     document.getElementById("calc-cta").addEventListener("click",function(){
-      var ids=selected();if(ids.length)msg.value=ids.map(function(i){return byId[i].label}).join(", ");
+      var ids=selected();if(ids.length&&msg)msg.value=ids.map(function(i){return byId[i].label}).join(", ");
     });
   }
   document.querySelectorAll("[data-offer]").forEach(function(a){
-    a.addEventListener("click",function(){msg.value=a.getAttribute("data-offer")});
+    a.addEventListener("click",function(){if(msg)msg.value=a.getAttribute("data-offer")});
   });
 
   var reviews=[
