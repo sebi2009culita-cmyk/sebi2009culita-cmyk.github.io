@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/3nnsia3_xxuya.css","style"]
+:HL["/_next/static/chunks/1j1joa0q9puef.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"blog/article/de-cate-sedinte-de-epilare-definitiva-cu-laser-este-nevoie-ca-sa-scapi-permanent-de-firele-de-par","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"xvRzd5M_jrWU9HXe4z1Z9","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"A5vOKYqeBELXvX-hk-a4H","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
