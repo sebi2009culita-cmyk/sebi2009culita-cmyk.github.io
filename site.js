@@ -576,8 +576,9 @@
   /* demo de apăsare pe Programează-te: la fiecare încărcare a paginii principale (și la reîncărcare), pe butonul vizibil.
      Dacă bannerul de cookie-uri e deschis, așteaptă alegerea; dacă cookie-urile sunt deja confirmate, pornește după 2,2 s. */
   (function(){
-    if(MPA?location.pathname!=="/":current)return; /* doar pe pagina principală */
-    var hero=document.querySelector(".hero-actions .btn-primary"),topBtn=document.querySelector(".top .btn-primary"),
+    /* pe subpagini nu rulează demo-ul, doar lumina continuă pe „Programează-te” (din hero-ul paginii, din antet sau din bara de jos) */
+    var home=!(MPA?location.pathname!=="/":current);
+    var hero=home?document.querySelector(".hero-actions .btn-primary"):document.querySelector('.v-hero a.btn-primary[href="#programare"]'),topBtn=document.querySelector(".top .btn-primary"),
         barBtn=document.querySelector(".cta-bar .btn-primary"),header=document.querySelector(".top");
     /* vizibil cu adevărat: întreg pe ecran, sub antetul fix (dacă nu e chiar în antet) și neacoperit de nimic (banner, cortină) */
     function visible(el){
@@ -622,6 +623,7 @@
       if(!glowStarted){glowStarted=true;addEventListener("scroll",queueGlow,{passive:true});addEventListener("resize",queueGlow)}
       glowOn=null;placeGlow();
     }
+    if(!home){setTimeout(startGlow,900);return}
     var tries=0;
     function play(){
       if(document.getElementById("ck").hidden===false)return;
