@@ -638,7 +638,9 @@
     var h=document.getElementById("f-city");if(h)h.value=c;
   }
   (function(){
-    var f=document.getElementById("programare"),steps=f.querySelectorAll(".st"),N=steps.length,cur=0;
+    /* formularul vechi (cerere pe WhatsApp); programarea online nouă e componenta BookingCheckout, care se descurcă singură */
+    var f=document.getElementById("programare");if(!f||!f.querySelector(".st"))return;
+    var steps=f.querySelectorAll(".st"),N=steps.length,cur=0;
     var bar=document.getElementById("st-bar"),count=document.getElementById("st-count"),err=document.getElementById("f-err");
     var back=document.getElementById("st-back"),next=document.getElementById("st-next"),send=document.getElementById("st-send");
     var $=function(id){return document.getElementById(id)};
@@ -741,7 +743,7 @@
     var form=document.getElementById("programare");
     if(!form||typeof HTMLDialogElement!=="function")return;
     var dlg=document.createElement("dialog");dlg.className="book-dlg";dlg.setAttribute("aria-labelledby","book-dlg-t");
-    dlg.innerHTML='<div class="book-dlg-head"><h2 id="book-dlg-t">Programează consultația gratuită</h2>'+
+    dlg.innerHTML='<div class="book-dlg-head"><h2 id="book-dlg-t">Programează-te online</h2>'+
       '<button type="button" class="book-dlg-x" aria-label="Închide"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div><div class="book-dlg-body"></div>';
     document.body.appendChild(dlg);
     var body=dlg.querySelector(".book-dlg-body"),loc=document.createElement("div"),opener=null,ret=0;
@@ -753,7 +755,7 @@
       if(!body.contains(form)){form.parentNode.insertBefore(loc,form);body.appendChild(form)}
       document.documentElement.classList.add("book-open");
       dlg.showModal();shown=true;
-      var el=form.querySelector(".st.is-on input:checked,.st.is-on input:not([type=hidden]),.st.is-on textarea");
+      var el=form.querySelector(".st.is-on input:checked,.st.is-on input:not([type=hidden]),.st.is-on textarea,.bk-panel button:not([disabled])");
       if(el)el.focus({preventScroll:true});
     }
     /* închiderea nu depinde doar de evenimentul „close” al browserului (nu vine mereu la timp) */

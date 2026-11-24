@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/3seo8vck65hni.css","style"]
+:HL["/_next/static/chunks/3d9jqz1jzau1l.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"blog/article/de-ce-femeile-gravide-nu-au-voie-sa-se-epileze-cu-laserul","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"9bpZOmzROI-2skf2HmJSY","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"s1g-vp3rdnvh9joeU7EJ6","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
