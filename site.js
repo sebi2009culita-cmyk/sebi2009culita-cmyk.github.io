@@ -429,11 +429,11 @@
   /* Ofertele și recenziile se derulează singure, încet și fără oprire, în buclă: cardurile sunt dublate (copiile sunt ascunse
      de cititoarele de ecran și de tastatură), iar când derularea ajunge la copii sare înapoi cu exact o lungime, deci nu se vede saltul.
      Mișcare constantă, deci viteză liniară (~28 px/s). Cât tragi tu (mouse sau deget), derulezi cu rotița/trackpadul, apeși săgețile
-     sau ai focusul înăuntru, animația stă pe loc și pornește iar de unde ai lăsat-o, după ~1,5 s.
+     sau ai focusul înăuntru, animația stă pe loc; pe telefon stă cât ții degetul pe ecran și cât rândul mai alunecă, apoi pornește iar de unde l-ai lăsat, după ~1 s.
      Stă și când rândul nu e pe ecran sau tabul e ascuns. Cu „mișcare redusă” nu pornește deloc (rândurile rămân ca înainte). */
   (function(){
     if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-    var SPEED=28,RESUME=1500;
+    var SPEED=28,RESUME=1000;
     function autoLoop(el,controls){
       var orig=Array.prototype.slice.call(el.children);if(orig.length<2)return;
       orig.forEach(function(c){
@@ -466,14 +466,19 @@
         raf=requestAnimationFrame(tick);
       }
       function run(){if(!raf&&visible&&!hidden){last=0;raf=requestAnimationFrame(tick)}}
-      ["pointerdown","touchstart"].forEach(function(t){el.addEventListener(t,function(){touching=true},{passive:true})});
-      ["pointerup","pointercancel","lostpointercapture","touchend","touchcancel"].forEach(function(t){el.addEventListener(t,function(){if(touching)release()},{passive:true})});
+      /* mouse: prin pointer events. Deget: doar prin touch events, pentru că pe telefon browserul trimite „pointercancel”
+         imediat ce începe derularea nativă, deși degetul e încă pe ecran (asta pornea animația peste tine). */
+      el.addEventListener("pointerdown",function(e){if(e.pointerType==="mouse")touching=true},{passive:true});
+      ["pointerup","pointercancel","lostpointercapture"].forEach(function(t){el.addEventListener(t,function(e){if(e.pointerType==="mouse"&&touching)release()},{passive:true})});
+      el.addEventListener("touchstart",function(){touching=true},{passive:true});
+      ["touchend","touchcancel"].forEach(function(t){el.addEventListener(t,function(e){if(touching&&!e.touches.length)release()},{passive:true})});
       el.addEventListener("wheel",function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY))hold(RESUME)},{passive:true});
       el.addEventListener("focusin",function(){hold(1e9)});
       el.addEventListener("focusout",function(){holdUntil=now()+RESUME});
       (controls||[]).forEach(function(b){if(b)b.addEventListener("click",function(){hold(RESUME+800)})});
       /* când derulează omul (sau săgețile), poziția animației se ia de unde a lăsat-o el */
-      el.addEventListener("scroll",function(){if(touching||now()<holdUntil){wrap();pos=el.scrollLeft}},{passive:true});
+      /* cât rândul încă alunecă după ce ai ridicat degetul (inerția), animația mai așteaptă; pornește la ~1 s după ce s-a oprit */
+      el.addEventListener("scroll",function(){if(touching||now()<holdUntil){wrap();pos=el.scrollLeft;if(!touching)hold(RESUME)}},{passive:true});
       addEventListener("resize",function(){measure();if(period&&pos>=period)pos-=period});
       document.addEventListener("visibilitychange",function(){hidden=document.hidden;run()});
       if("IntersectionObserver" in window)new IntersectionObserver(function(en){visible=en[0].isIntersecting;if(visible)measure();run()}).observe(el);

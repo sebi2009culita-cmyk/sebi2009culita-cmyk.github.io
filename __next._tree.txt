@@ -2,4 +2,4 @@
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/img/hero.webp","image",{"imageSrcSet":"/img/hero-800.webp 800w, /img/hero.webp 1600w","imageSizes":"100vw","fetchPriority":"high"}]
 1:[["children",{"s":"__PAGE__","h":128}]]
-0:{"b":"ySdDItQanXnEE7vDxcuKh","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
+0:{"b":"BNNg1MJEcySdG_CiVrMYU","t":{"t":{"s":"","h":16,"c":"$Q1"}}}
