@@ -504,7 +504,7 @@
     document.documentElement.classList.add("js-reveal");
   }
 
-  /* înainte / după: linia se mută doar când o tragi de bară (mouse sau deget); din tastatură cu săgețile */
+  /* înainte / după: linia nu urmărește cursorul; sare unde dai clic și se trage cu mouse-ul sau cu degetul; din tastatură cu săgețile */
   /* (merge pentru fiecare slider .ba de pe pagină: NOON pe prima pagină, zonele pe paginile lor) */
   Array.prototype.forEach.call(document.querySelectorAll(".ba"),function(ba){
     var baRange=ba.querySelector(".ba-range"),baDrag=false,baTouched=false;
@@ -512,7 +512,6 @@
     function baSet(p){p=Math.max(0,Math.min(100,p));ba.style.setProperty("--p",p+"%");baRange.value=Math.round(p)}
     function baX(x){var r=ba.getBoundingClientRect();baSet((x-r.left)/r.width*100)}
     ba.addEventListener("pointerdown",function(e){
-      if(!e.target.closest||!e.target.closest(".ba-line"))return;
       baTouched=baDrag=true;e.preventDefault();
       if(ba.setPointerCapture)try{ba.setPointerCapture(e.pointerId)}catch(_){}
       ba.classList.add("is-dragging");baX(e.clientX)});
