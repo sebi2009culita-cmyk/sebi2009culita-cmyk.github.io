@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/136wn634fnamv.css","style"]
+:HL["/_next/static/chunks/2wsg_2w8th2qp.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"blog/article/pot-sa-ma-epilez-cu-laser-daca-am-alunite-sau-tatuaje","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"iREXM3nrmDVxItLxJP-EF","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"u3PUUuQZ5orD73oSIOUnG","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
