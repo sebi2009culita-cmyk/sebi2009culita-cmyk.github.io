@@ -2,4 +2,4 @@
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"blog/article/contraindicatii-epilare-definitiva-cu-laser","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"nU1Th2VjO2T3p_SeozL28","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"SOEkjUX7vTkDauFCKCS1W","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

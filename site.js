@@ -426,6 +426,66 @@
     document.querySelectorAll(".rev-strip").forEach(dragRow);
   }
 
+  /* Ofertele și recenziile se derulează singure, încet și fără oprire, în buclă: cardurile sunt dublate (copiile sunt ascunse
+     de cititoarele de ecran și de tastatură), iar când derularea ajunge la copii sare înapoi cu exact o lungime, deci nu se vede saltul.
+     Mișcare constantă, deci viteză liniară (~28 px/s). Cât tragi tu (mouse sau deget), derulezi cu rotița/trackpadul, apeși săgețile
+     sau ai focusul înăuntru, animația stă pe loc și pornește iar de unde ai lăsat-o, după ~1,5 s.
+     Stă și când rândul nu e pe ecran sau tabul e ascuns. Cu „mișcare redusă” nu pornește deloc (rândurile rămân ca înainte). */
+  (function(){
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    var SPEED=28,RESUME=1500;
+    function autoLoop(el,controls){
+      var orig=Array.prototype.slice.call(el.children);if(orig.length<2)return;
+      orig.forEach(function(c){
+        var k=c.cloneNode(true);k.classList.add("loop-clone");k.setAttribute("aria-hidden","true");k.removeAttribute("id");
+        Array.prototype.forEach.call(k.querySelectorAll("[id]"),function(x){x.removeAttribute("id")});
+        if(k.matches("a,button,[tabindex]"))k.setAttribute("tabindex","-1");
+        Array.prototype.forEach.call(k.querySelectorAll("a,button,input,[tabindex]"),function(x){x.setAttribute("tabindex","-1")});
+        el.appendChild(k);
+      });
+      el.style.scrollSnapType="none";
+      var first=orig[0],firstClone=el.children[orig.length];
+      var period=0,pos=el.scrollLeft,visible=false,hidden=document.hidden,touching=false,holdUntil=0,raf=0,last=0;
+      function measure(){period=firstClone.offsetLeft-first.offsetLeft;if(period<=el.clientWidth)period=0}
+      function now(){return performance.now()}
+      function hold(ms){holdUntil=Math.max(holdUntil,now()+ms)}
+      function release(){touching=false;holdUntil=now()+RESUME}
+      function wrap(){
+        if(!period)return;
+        if(el.scrollLeft>=period)el.scrollLeft-=period;
+        else if(el.scrollLeft<=0)el.scrollLeft+=period;
+      }
+      function tick(t){
+        raf=0;
+        var dt=last?Math.min(t-last,64)/1000:0;last=t;
+        if(!visible||hidden)return void(last=0);
+        if(!touching&&t>=holdUntil){
+          if(!period)measure();
+          if(period){pos+=SPEED*dt;if(pos>=period)pos-=period;el.scrollLeft=pos}
+        }
+        raf=requestAnimationFrame(tick);
+      }
+      function run(){if(!raf&&visible&&!hidden){last=0;raf=requestAnimationFrame(tick)}}
+      ["pointerdown","touchstart"].forEach(function(t){el.addEventListener(t,function(){touching=true},{passive:true})});
+      ["pointerup","pointercancel","lostpointercapture","touchend","touchcancel"].forEach(function(t){el.addEventListener(t,function(){if(touching)release()},{passive:true})});
+      el.addEventListener("wheel",function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY))hold(RESUME)},{passive:true});
+      el.addEventListener("focusin",function(){hold(1e9)});
+      el.addEventListener("focusout",function(){holdUntil=now()+RESUME});
+      (controls||[]).forEach(function(b){if(b)b.addEventListener("click",function(){hold(RESUME+800)})});
+      /* când derulează omul (sau săgețile), poziția animației se ia de unde a lăsat-o el */
+      el.addEventListener("scroll",function(){if(touching||now()<holdUntil){wrap();pos=el.scrollLeft}},{passive:true});
+      addEventListener("resize",function(){measure();if(period&&pos>=period)pos-=period});
+      document.addEventListener("visibilitychange",function(){hidden=document.hidden;run()});
+      if("IntersectionObserver" in window)new IntersectionObserver(function(en){visible=en[0].isIntersecting;if(visible)measure();run()}).observe(el);
+      else{visible=true;run()}
+    }
+    var offers=document.getElementById("strip");
+    if(offers)autoLoop(offers,[document.getElementById("strip-prev"),document.getElementById("strip-next")]);
+    Array.prototype.forEach.call(document.querySelectorAll(".rev-strip"),function(st){
+      var row=st.closest(".rev-row");autoLoop(st,row?Array.prototype.slice.call(row.querySelectorAll(".rev-ctrl button")):[]);
+    });
+  })();
+
   if("IntersectionObserver" in window){
     /* venit prin cortină de pe altă pagină: animațiile de intrare pornesc când se ridică cortina, iar ce e deja pe ecran
        intră pe rând, mai repede decât la prima vizită (rv-rapid: 600 ms, 70 ms între elemente) */
