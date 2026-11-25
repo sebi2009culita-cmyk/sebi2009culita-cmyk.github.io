@@ -1,7 +1,2 @@
 User-agent: *
-Allow: /
-
-# Toate crawlerele au acces: motoarele de căutare, asistenții AI (de ex. OAI-SearchBot, PerplexityBot)
-# și crawlerele de antrenare ale companiilor de AI (de ex. GPTBot, ClaudeBot, Google-Extended).
-
-Sitemap: https://amazingskin.ro/sitemap.xml
+Disallow: /
