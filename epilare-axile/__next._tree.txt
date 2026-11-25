@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/0tis54huazc4n.css","style"]
+:HL["/_next/static/chunks/3lwyc800b404l.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"epilare-axile","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"X2zIpoi-wV5s3XOL0rnKt","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"oJKVn4tm70IqBgtk5q4mu","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}

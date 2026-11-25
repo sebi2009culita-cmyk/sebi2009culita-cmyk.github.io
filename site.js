@@ -576,70 +576,12 @@
     dlg.addEventListener("click",function(e){if(e.target.closest('a[href^="#"]'))dlg.close()});
     var c=read();if(c)run(c);else box.hidden=false;
   })();
-  /* demo de apăsare pe Programează-te: la fiecare încărcare a paginii principale (și la reîncărcare), pe butonul vizibil.
-     Dacă bannerul de cookie-uri e deschis, așteaptă alegerea; dacă cookie-urile sunt deja confirmate, pornește după 2,2 s. */
+  /* Programează-te: lumina roz care se rotește pe contur rulează non-stop, pe toate butoanele (din hero-ul paginii, din antet și din bara de jos),
+     de la încărcarea paginii, fără să depindă de derulare. Demo-ul de apăsare a fost scos. */
   (function(){
-    /* pe subpagini nu rulează demo-ul, doar lumina continuă pe „Programează-te” (din hero-ul paginii, din antet sau din bara de jos) */
     var home=!(MPA?location.pathname!=="/":current);
-    var hero=home?document.querySelector(".hero-actions .btn-primary"):document.querySelector('.v-hero a.btn-primary[href="#programare"]'),topBtn=document.querySelector(".top .btn-primary"),
-        barBtn=document.querySelector(".cta-bar .btn-primary"),header=document.querySelector(".top");
-    /* vizibil cu adevărat: întreg pe ecran, sub antetul fix (dacă nu e chiar în antet) și neacoperit de nimic (banner, cortină) */
-    function visible(el){
-      if(!el||getComputedStyle(el).visibility==="hidden")return false;
-      var r=el.getBoundingClientRect();if(!r.width||!r.height)return false;
-      var top=header&&!header.contains(el)?header.getBoundingClientRect().bottom:0;
-      if(r.top<top-1||r.bottom>innerHeight+1)return false;
-      var hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
-      return !!hit&&(hit===el||el.contains(hit));
-    }
-    function press(b,onGone){
-      b.classList.remove("demo-press","glow-loop");void b.offsetWidth;b.classList.add("demo-press");
-      function stop(){b.classList.remove("demo-press");b.removeEventListener("animationend",end);removeEventListener("scroll",watch)}
-      /* demo-ul s-a terminat pe ecran: butonul primește lumina care se rotește pe contur */
-      function end(e){if(e.target===b&&!e.pseudoElement&&e.animationName.indexOf("demo")===0){stop();startGlow()}}
-      /* dacă butonul iese de pe ecran în timpul demo-ului (s-a derulat), îl oprim aici și îl mutăm */
-      function watch(){if(onGone&&!visible(b)){stop();onGone()}}
-      b.addEventListener("animationend",end);
-      if(onGone)addEventListener("scroll",watch,{passive:true});
-    }
-    /* lumina de după demo: pe butonul din hero doar cât timp pagina e sus de tot; cum derulezi (chiar și puțin),
-       trece pe butonul din antet (pe telefon, unde antetul nu are buton, pe cel din bara de jos) și revine pe hero când urci până sus */
-    var glowOn=null,glowRaf=0;
-    function shown(el){return !!el&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=="hidden"}
-    function glowTarget(){
-      var r=hero&&hero.getBoundingClientRect(),hb=header?header.getBoundingClientRect().bottom:0;
-      var heroOn=!!(r&&r.height&&r.bottom>hb&&r.top<innerHeight);
-      if(heroOn&&scrollY<=8)return hero;
-      if(shown(topBtn))return topBtn;
-      var bar=barBtn&&barBtn.closest(".cta-bar");
-      if(shown(barBtn)&&!(bar&&bar.classList.contains("is-hidden")))return barBtn;
-      return heroOn?hero:null;
-    }
-    function placeGlow(){
-      glowRaf=0;var t=glowTarget();if(t===glowOn)return;
-      if(glowOn)glowOn.classList.remove("glow-loop");
-      glowOn=t;if(t&&!t.classList.contains("demo-press"))t.classList.add("glow-loop");
-    }
-    function queueGlow(){if(!glowRaf)glowRaf=requestAnimationFrame(placeGlow)}
-    var glowStarted=false;
-    function startGlow(){
-      if(!glowStarted){glowStarted=true;addEventListener("scroll",queueGlow,{passive:true});addEventListener("resize",queueGlow)}
-      glowOn=null;placeGlow();
-    }
-    if(!home){setTimeout(startGlow,900);return}
-    var tries=0;
-    function play(){
-      if(document.getElementById("ck").hidden===false)return;
-      /* întâi butonul mare din hero; dacă s-a derulat (sau nu încape pe ecran), cel din antet sau din bara de jos */
-      var b=[hero,topBtn,barBtn].filter(visible)[0];
-      if(!b){if(tries++<8)setTimeout(play,400);return}
-      /* dacă butonul din hero încă apare treptat (animația de intrare a paginii), așteptăm să fie complet vizibil */
-      if(b===hero&&b.closest(".rv:not(.is-in),[data-reveal]:not(.is-in)")&&tries++<12){setTimeout(play,250);return}
-      press(b,b===hero?function(){var alt=[topBtn,barBtn].filter(visible)[0];if(alt)press(alt)}:null);
-    }
-    function later(ms){setTimeout(play,ms)}
-    if(document.getElementById("ck").hidden)later(2200);
-    else window.addEventListener("as-consent",function(){later(900)},{once:true});
+    var hero=home?document.querySelector(".hero-actions .btn-primary"):document.querySelector('.v-hero a.btn-primary[href="#programare"]');
+    [hero,document.querySelector(".top .btn-primary"),document.querySelector(".cta-bar .btn-primary")].forEach(function(b){if(b)b.classList.add("glow-loop")});
   })();
   /* formular pe pași */
   function setCity(c){
