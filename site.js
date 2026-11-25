@@ -402,47 +402,28 @@
     document.getElementById("strip-prev").addEventListener("click",function(){step(-1)});
     document.getElementById("strip-next").addEventListener("click",function(){step(1)});
   }
-  /* calculator: rotița mouse-ului derulează ofertele; la capete, pagina merge mai departe */
+  /* calculator: ofertele și recenziile se trag cu mouse-ul (clic și tragi), fără derulare lină pe rotiță și fără snap;
+     rotița derulează pagina ca de obicei. Dacă ai tras, clicul de la final nu mai deschide linkul de sub cursor. */
   if(matchMedia("(pointer:fine)").matches){
-    /* pe calculator: rotița derulează lin rândul pe orizontală (fără snap); la capete, pagina merge mai departe */
-    var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var smoothWheel=function(el){
-      el.style.scrollSnapType="none";
-      var target=null,pos=0,raf=0,last=0;
-      function maxX(){return el.scrollWidth-el.clientWidth}
-      function tick(t){
-        var dt=last?Math.min(t-last,50):16.7;last=t;
-        var d=target-pos;
-        if(Math.abs(d)<0.5||reduce){pos=target;el.scrollLeft=pos;raf=0;last=0;target=null;return}
-        pos+=d*(1-Math.pow(0.82,dt/16.7));
-        el.scrollLeft=pos;
-        raf=requestAnimationFrame(tick);
-      }
-      function glideTo(x){
-        if(target===null)pos=el.scrollLeft;
-        target=Math.max(0,Math.min(maxX(),x));
-        if(!raf)raf=requestAnimationFrame(tick);
-      }
-      el.addEventListener("wheel",function(e){
-        if(e.ctrlKey||Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
-        var dy=e.deltaY*(e.deltaMode===1?40:e.deltaMode===2?el.clientWidth:1);
-        var cur=target===null?el.scrollLeft:target,m=maxX();
-        if((dy>0&&cur>=m-1)||(dy<0&&cur<=1))return;
-        e.preventDefault();
-        glideTo(cur+dy*1.5);
-      },{passive:false});
-      return {
-        /* merge la marginea cardului următor / anterior */
-        step:function(dir){
-          var cur=target===null?el.scrollLeft:target,base=el.getBoundingClientRect().left-el.scrollLeft,xs=[];
-          Array.prototype.forEach.call(el.children,function(c){xs.push(c.getBoundingClientRect().left-base)});
-          var next=dir>0?xs.filter(function(x){return x>cur+2})[0]:xs.filter(function(x){return x<cur-2}).pop();
-          glideTo(next===undefined?(dir>0?maxX():0):next);
-        }
-      };
+    var dragRow=function(el){
+      el.style.scrollSnapType="none";el.classList.add("drag-row");
+      var down=false,moved=false,x0=0,s0=0;
+      el.addEventListener("pointerdown",function(e){
+        if(e.pointerType!=="mouse"||e.button!==0||e.target.closest("button,input,select,textarea,video"))return;
+        down=true;moved=false;x0=e.clientX;s0=el.scrollLeft;
+      });
+      el.addEventListener("pointermove",function(e){
+        if(!down)return;var dx=e.clientX-x0;
+        if(!moved&&Math.abs(dx)>5){moved=true;el.classList.add("is-dragging");try{el.setPointerCapture(e.pointerId)}catch(_){}}
+        if(moved){el.scrollLeft=s0-dx;e.preventDefault()}
+      });
+      function up(){if(!down)return;down=false;el.classList.remove("is-dragging")}
+      el.addEventListener("pointerup",up);el.addEventListener("pointercancel",up);el.addEventListener("lostpointercapture",up);
+      el.addEventListener("click",function(e){if(moved){e.preventDefault();e.stopPropagation();moved=false}},true);
+      el.addEventListener("dragstart",function(e){e.preventDefault()});
     };
-    if(strip)step=smoothWheel(strip).step;
-    document.querySelectorAll(".rev-strip").forEach(smoothWheel);
+    if(strip)dragRow(strip);
+    document.querySelectorAll(".rev-strip").forEach(dragRow);
   }
 
   if("IntersectionObserver" in window){
