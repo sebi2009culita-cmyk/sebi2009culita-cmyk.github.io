@@ -504,16 +504,20 @@
     document.documentElement.classList.add("js-reveal");
   }
 
-  /* înainte / după: linia urmărește mouse-ul; pe telefon se trage cu degetul; din tastatură cu săgețile */
+  /* înainte / după: linia se mută doar când o tragi de bară (mouse sau deget); din tastatură cu săgețile */
   /* (merge pentru fiecare slider .ba de pe pagină: NOON pe prima pagină, zonele pe paginile lor) */
   Array.prototype.forEach.call(document.querySelectorAll(".ba"),function(ba){
     var baRange=ba.querySelector(".ba-range"),baDrag=false,baTouched=false;
     if(!baRange)return;
     function baSet(p){p=Math.max(0,Math.min(100,p));ba.style.setProperty("--p",p+"%");baRange.value=Math.round(p)}
     function baX(x){var r=ba.getBoundingClientRect();baSet((x-r.left)/r.width*100)}
-    ba.addEventListener("pointermove",function(e){if(e.pointerType==="mouse"||baDrag){baTouched=true;baX(e.clientX)}});
-    ba.addEventListener("pointerdown",function(e){baTouched=baDrag=true;baX(e.clientX)});
-    ["pointerup","pointercancel","pointerleave"].forEach(function(ev){ba.addEventListener(ev,function(){baDrag=false})});
+    ba.addEventListener("pointerdown",function(e){
+      if(!e.target.closest||!e.target.closest(".ba-line"))return;
+      baTouched=baDrag=true;e.preventDefault();
+      if(ba.setPointerCapture)try{ba.setPointerCapture(e.pointerId)}catch(_){}
+      ba.classList.add("is-dragging");baX(e.clientX)});
+    ba.addEventListener("pointermove",function(e){if(baDrag)baX(e.clientX)});
+    ["pointerup","pointercancel","lostpointercapture"].forEach(function(ev){ba.addEventListener(ev,function(){baDrag=false;ba.classList.remove("is-dragging")})});
     baRange.addEventListener("input",function(){baTouched=true;baSet(+baRange.value)});
     /* o singură mișcare de probă când cercul apare, ca să se vadă că linia se mută */
     if("IntersectionObserver" in window&&!matchMedia("(prefers-reduced-motion: reduce)").matches){
