@@ -1,5 +1,5 @@
-:HL["/_next/static/chunks/0z92zlmqab02o.css","style"]
+:HL["/_next/static/chunks/2of8g41ygen67.css","style"]
 :HL["/fonts/noto-sans-latin-500-normal.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 2:[["children",{"s":"__PAGE__","h":160}]]
 1:[["children",{"s":{"n":"slug","t":"c","k":"blog/article/contraindicatii-epilare-definitiva-cu-laser","s":[]},"h":65600,"c":"$Q2"}]]
-0:{"b":"WXcl5MZbVAJBmJvLm7jQw","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
+0:{"b":"dihETU4Yf1m4jk0fbcxNE","t":{"t":{"s":"","h":131088,"c":"$Q1"}}}
