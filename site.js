@@ -209,7 +209,7 @@
   matchMedia("(min-width:1181px)").addEventListener("change",function(m){if(m.matches&&!mn.hidden)setMenu(false)});
 
   var groups=[
-    {name:"Față",zones:[["mustata","Mustață / bărbie / perciuni",85],["fata","Față total",200]]},
+    {name:"Față",zones:[["mustata","Mustață",80],["barbie","Bărbie",80],["perciuni","Perciuni",80],["fata","Față total",200]]},
     {name:"Corp superior",zones:[["axile","Axile",145],["brate","Brațe",250],["umeri","Umeri, ceafă",150],["pectorali","Pectorali, abdomen",250],["spate","Spate total",385],["lombari","Lombari",150]]},
     {name:"Corp inferior",zones:[["bikini","Linia bikini",125],["inghinal","Inghinal total",285],["fese","Fese",150],["picioare-scurt","Picioare (scurt)",285],["picioare-lung","Picioare (lung)",485]]}
 ,
@@ -263,7 +263,7 @@
     box.hidden=!deals.length;
   }
   /* zona mare include zona mică: o bifezi pe cea mare, cea mică se debifează și se blochează */
-  var covers={"fata":["mustata"],"inghinal":["bikini"],"picioare-lung":["picioare-scurt"],"spate":["lombari","fese"]};
+  var covers={"fata":["mustata","barbie","perciuni"],"inghinal":["bikini"],"picioare-lung":["picioare-scurt"],"spate":["lombari","fese"]};
   function applyCovers(){
     var blocked={};
     Object.keys(covers).forEach(function(big){
