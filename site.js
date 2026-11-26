@@ -628,6 +628,15 @@
     var home=!(MPA?location.pathname!=="/":current);
     var hero=home?document.querySelector(".hero-actions .btn-primary"):document.querySelector('.v-hero a.btn-primary[href="#programare"]');
     [hero,document.querySelector(".top .btn-primary"),document.querySelector(".cta-bar .btn-primary")].forEach(function(b){if(b)b.classList.add("glow-loop")});
+    /* Luminile rămân sincronizate: o animație CSS repornește de la zero când butonul trece prin display:none
+       (bara de jos și butonul din antet apar și dispar la schimbarea lățimii ecranului), așa că fiecare rotire
+       e legată de același moment de start al paginii (startTime 0), oricând ar porni. */
+    function sync(el){
+      if(!el.getAnimations)return;
+      el.getAnimations({subtree:true}).forEach(function(a){if(a.animationName==="glow-spin"&&a.startTime!==0)a.startTime=0});
+    }
+    document.addEventListener("animationstart",function(e){if(e.animationName==="glow-spin")sync(e.target)});
+    document.querySelectorAll(".glow-loop").forEach(sync);
   })();
   /* formular pe pași */
   function setCity(c){
