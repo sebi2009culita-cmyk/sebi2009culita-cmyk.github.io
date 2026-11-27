@@ -631,12 +631,26 @@
     /* Luminile rămân sincronizate: o animație CSS repornește de la zero când butonul trece prin display:none
        (bara de jos și butonul din antet apar și dispar la schimbarea lățimii ecranului), așa că fiecare rotire
        e legată de același moment de start al paginii (startTime 0), oricând ar porni. */
+    /* Lumina se oprește cât butonul nu se vede (hero-ul derulat în sus, bara de jos ascunsă cât e formularul pe ecran,
+       butonul din antet ascuns pe telefon). Rotirea animă unghiul unui conic-gradient cu blur, pe care browserul îl redesenează
+       pe procesor la fiecare cadru; rulând non-stop pe butoane nevăzute, încetinea derularea și formularul de programare pe telefoane.
+       La reapariție pornește din nou, tot sincronizată (startTime 0). */
     function sync(el){
-      if(!el.getAnimations)return;
-      el.getAnimations({subtree:true}).forEach(function(a){if(a.animationName==="glow-spin"&&a.startTime!==0)a.startTime=0});
+      var b=el.closest?el.closest(".glow-loop"):null;if(!b||!b.getAnimations)return;
+      var on=b.dataset.glowOn!=="0";
+      b.getAnimations({subtree:true}).forEach(function(a){
+        if(a.animationName!=="glow-spin")return;
+        if(on){if(a.startTime!==0||a.playState!=="running")a.startTime=0}
+        else if(a.playState!=="paused")a.pause();
+      });
     }
     document.addEventListener("animationstart",function(e){if(e.animationName==="glow-spin")sync(e.target)});
-    document.querySelectorAll(".glow-loop").forEach(sync);
+    var glows=document.querySelectorAll(".glow-loop");
+    if("IntersectionObserver" in window){
+      var io=new IntersectionObserver(function(en){en.forEach(function(x){x.target.dataset.glowOn=x.isIntersecting?"1":"0";sync(x.target)})});
+      glows.forEach(function(b){io.observe(b)});
+    }
+    glows.forEach(sync);
   })();
   /* formular pe pași */
   function setCity(c){
